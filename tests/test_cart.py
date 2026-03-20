@@ -51,3 +51,13 @@ def test_total_calculation():
     cart.add("SKU2", 1)  # 1 * 200 = 200
 
     assert cart.total() == 400
+
+def test_insufficient_inventory():
+    class FakeInventory:
+        def getAvailable(self, sku):
+            return 5  # only 5 available
+
+    cart = Cart(FakeCatalog(), inventory=FakeInventory())
+
+    with pytest.raises(ValueError):
+        cart.add("SKU1", 10)  # request more than available

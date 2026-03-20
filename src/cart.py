@@ -12,14 +12,24 @@ class LineItem:
 
 
 class Cart:
-    def __init__(self, catalog):
+    def __init__(self, catalog, inventory=None):
         self.catalog = catalog
+        self.inventory = inventory
         self.items = {}
-
+    
     def add(self, sku, quantity):
         product = self.catalog.get(sku)
         if not product:
             raise ValueError("Product not found")
+
+        if quantity <= 0:
+            raise ValueError("Invalid quantity")
+
+        # ✅ NEW: Inventory check
+        if self.inventory:
+            available = self.inventory.getAvailable(sku)
+            if quantity > available:
+                raise ValueError("Insufficient inventory")
 
         if sku in self.items:
             self.items[sku].quantity += quantity
